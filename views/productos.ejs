@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>PlayZone Store - Productos</title>
+  <link rel="stylesheet" href="/styles.css">
+
+  <!-- Iconos (para botones y estética) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="ps-bg">
+  <% 
+    const hasLoginError = typeof loginError !== 'undefined' && loginError;
+    const hasRegistroError = typeof registroError !== 'undefined' && registroError;
+  %>
+
+  <!-- ========== NAVBAR PLAYSTATION ========== -->
+  <header class="ps-header">
+    <div class="ps-logo">
+      <img src="/img/ps_logo.png" alt="PlayStation" class="ps-logo-img">
+      <span class="ps-title">PlayZone Store</span>
+    </div>
+
+    <nav class="ps-nav">
+      <a href="/productos" class="ps-nav-link active">Productos</a>
+      <a href="/carrito" class="ps-nav-link">
+        <i class="fa-solid fa-cart-shopping"></i> Carrito (<%= cartCount %>)
+      </a>
+
+      <% if (!user) { %>
+        <button type="button" class="ps-nav-btn" onclick="abrirModal('modal-login')">
+          <i class="fa-solid fa-right-to-bracket"></i> Iniciar sesión
+        </button>
+
+        <button type="button" class="ps-nav-btn" onclick="abrirModal('modal-registro')">
+          <i class="fa-solid fa-user-plus"></i> Registrarse
+        </button>
+      <% } else { %>
+
+        <span class="user-badge">
+          <i class="fa-solid fa-user"></i> Hola, <%= user.nombre %>
+        </span>
+
+        <a href="/historial" class="ps-nav-link"><i class="fa-solid fa-clock-rotate-left"></i> Historial</a>
+
+        <form action="/logout" method="POST" class="ps-inline">
+          <button type="submit" class="ps-nav-btn">
+            <i class="fa-solid fa-door-open"></i> Cerrar sesión
+          </button>
+        </form>
+      <% } %>
+    </nav>
+  </header>
+
+  <!-- ========== CONTENIDO PRINCIPAL ========== -->
+  <main class="ps-products-grid">
+
+    <h1 class="ps-section-title">Catálogo PlayStation</h1>
+
+    <% if (productos.length === 0) { %>
+      <p class="ps-empty">No hay productos registrados.</p>
+    <% } else { %>
+
+      <% productos.forEach(p => { %>
+        <div class="ps-product-card">
+
+          <!-- Imagen del producto -->
+          <div class="ps-product-img">
+            <% if (p.imagen_url) { %>
+              <img src="/uploads/<%= p.imagen_url %>" alt="<%= p.nombre %>">
+            <% } else { %>
+              <div class="ps-product-placeholder">
+                <i class="fa-solid fa-image"></i>
+              </div>
+            <% } %>
+          </div>
+
+          <!-- Info del producto -->
+          <h2 class="ps-product-title"><%= p.nombre %></h2>
+          <p class="ps-product-desc"><%= p.descripcion || 'Sin descripción' %></p>
+
+          <p class="ps-product-price">
+            $<%= Number(p.precio).toFixed(2) %>
+          </p>
+
+          <!-- Botón agregar -->
+          <form action="/carrito/agregar" method="POST">
+            <input type="hidden" name="productoId" value="<%= p.id %>">
+            <button type="submit" class="ps-btn-primary">
+              <i class="fa-solid fa-plus"></i> Agregar al carrito
+            </button>
+          </form>
+        </div>
+      <% }) %>
+
+    <% } %>
+  </main>
+
+  <!-- ========== MODAL LOGIN ========== -->
+  <div id="modal-login" class="modal-overlay<%= hasLoginError ? ' visible' : '' %>">
+    <div class="modal ps-modal">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-right-to-bracket"></i> Iniciar sesión</h2>
+        <button type="button" class="modal-close" onclick="cerrarModal('modal-login')">&times;</button>
+      </div>
+
+      <% if (hasLoginError) { %>
+        <div class="error-msg"><%= loginError %></div>
+      <% } %>
+
+      <form action="/login" method="POST" class="form-modal">
+        <label>
+          Correo electrónico:
+          <input type="email" name="email" required>
+        </label>
+        <label>
+          Contraseña:
+          <input type="password" name="password" required>
+        </label>
+        <button type="submit" class="ps-btn-primary">Entrar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========== MODAL REGISTRO ========== -->
+  <div id="modal-registro" class="modal-overlay<%= hasRegistroError ? ' visible' : '' %>">
+    <div class="modal ps-modal">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-user-plus"></i> Registrarse</h2>
+        <button type="button" class="modal-close" onclick="cerrarModal('modal-registro')">&times;</button>
+      </div>
+
+      <% if (hasRegistroError) { %>
+        <div class="error-msg"><%= registroError %></div>
+      <% } %>
+
+      <form action="/registro" method="POST" class="form-modal">
+        <label>
+          Nombre:
+          <input type="text" name="nombre" required>
+        </label>
+        <label>
+          Correo electrónico:
+          <input type="email" name="email" required>
+        </label>
+        <label>
+          Contraseña:
+          <input type="password" name="password" required>
+        </label>
+        <button type="submit" class="ps-btn-primary">Crear cuenta</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function abrirModal(id) {
+      document.getElementById(id).classList.add('visible');
+    }
+
+    function cerrarModal(id) {
+      document.getElementById(id).classList.remove('visible');
+    }
+
+    document.addEventListener('click', function (e) {
+      if (e.target.classList.contains('modal-overlay')) {
+        e.target.classList.remove('visible');
+      }
+    });
+  </script>
+
+</body>
+</html>

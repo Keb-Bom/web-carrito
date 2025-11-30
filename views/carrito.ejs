@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Mi carrito - PlayStation Store</title>
+  <link rel="stylesheet" href="/styles.css">
+
+  <!-- Fuente estilo PlayStation -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;500&display=swap" rel="stylesheet">
+</head>
+
+<body class="ps-body">
+  <!-- ========== HEADER PLAYSTATION ========== -->
+  <header class="ps-header">
+    <div class="ps-logo">
+      <img src="/img/ps_logo.png" alt="PlayStation" class="ps-logo-img">
+      <h1 class="ps-title">Mi Carrito</h1>
+    </div>
+
+    <nav class="ps-nav">
+      <a href="/productos" class="ps-nav-link">Seguir comprando</a>
+      <a href="/carrito" class="ps-nav-link">
+        🛒 Carrito (<%= cart.length ? cart.reduce((s, i) => s + i.cantidad, 0) : 0 %>)
+      </a>
+
+      <% if (user) { %>
+        <a href="/historial" class="ps-nav-link">📘 Historial</a>
+        <span class="ps-user">🎮 Hola, <%= user.nombre %></span>
+      <% } else { %>
+        <button class="ps-btn-link" onclick="abrirModalLogin()">Iniciar sesión</button>
+      <% } %>
+    </nav>
+  </header>
+
+  <!-- ========== MAIN ========== -->
+  <main class="carrito-main ps-main">
+    <% if (cart.length === 0) { %>
+
+      <div class="ps-empty">
+        <img src="/img/ps_controller.png" class="ps-empty-img">
+        <h2>Tu carrito está vacío</h2>
+        <a href="/productos" class="ps-btn-primary">Ver productos</a>
+      </div>
+
+    <% } else { %>
+
+      <table class="tabla-carrito ps-table">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% cart.forEach(item => { %>
+            <tr>
+              <td><strong><%= item.nombre %></strong></td>
+              <td>$<%= item.precio.toFixed(2) %></td>
+
+              <td>
+                <form action="/carrito/actualizar" method="POST" class="form-inline">
+                  <input type="hidden" name="productoId" value="<%= item.producto_id %>">
+                  <input type="number" name="cantidad" value="<%= item.cantidad %>" min="1" class="ps-input-number">
+                  <button type="submit" class="ps-btn-small">Actualizar</button>
+                </form>
+              </td>
+
+              <td>$<%= (item.precio * item.cantidad).toFixed(2) %></td>
+
+              <td>
+                <form action="/carrito/eliminar" method="POST">
+                  <input type="hidden" name="productoId" value="<%= item.producto_id %>">
+                  <button type="submit" class="ps-btn-delete">Quitar</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+      <!-- TOTAL -->
+      <div class="carrito-total ps-total">
+        <h2>Total: $<%= total.toFixed(2) %></h2>
+
+        <% if (!user) { %>
+          <p class="ps-warning">⚠ Debes iniciar sesión para realizar la compra.</p>
+          <a href="/productos" class="ps-btn-secondary">Iniciar sesión</a>
+        <% } else { %>
+          <form action="/checkout" method="GET">
+            <button class="ps-btn-primary">Finalizar compra</button>
+          </form>
+        <% } %>
+      </div>
+
+    <% } %>
+  </main>
+</body>
+</html>

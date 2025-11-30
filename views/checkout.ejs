@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Confirmar compra - PlayStation Store</title>
+  <link rel="stylesheet" href="/styles.css">
+
+  <!-- Fuentes estilo PS -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;500&display=swap" rel="stylesheet">
+</head>
+
+<body class="ps-body">
+
+  <!-- ========== HEADER ========== -->
+  <header class="ps-header">
+    <div class="ps-logo">
+      <img src="/img/ps_logo.png" class="ps-logo-img">
+      <h1 class="ps-title">Confirmar Compra</h1>
+    </div>
+
+    <nav class="ps-nav">
+      <a href="/productos" class="ps-nav-link">Productos</a>
+      <a href="/carrito" class="ps-nav-link">🛒 Carrito</a>
+
+      <% if (user) { %>
+        <a href="/historial" class="ps-nav-link">📘 Historial</a>
+        <span class="ps-user">🎮 <%= user.nombre %></span>
+      <% } %>
+    </nav>
+  </header>
+
+  <!-- ========== MAIN ========== -->
+  <main class="carrito-main ps-main">
+
+    <h2 class="ps-subtitle">📦 Resumen de tu carrito</h2>
+
+    <table class="tabla-carrito ps-table">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Precio</th>
+          <th>Cantidad</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% cart.forEach(item => { %>
+          <tr>
+            <td><strong><%= item.nombre %></strong></td>
+            <td>$<%= item.precio.toFixed(2) %></td>
+            <td><%= item.cantidad %></td>
+            <td>$<%= (item.precio * item.cantidad).toFixed(2) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <!-- TOTAL -->
+    <div class="carrito-total ps-total">
+      <h2>Total a pagar: $<%= total.toFixed(2) %></h2>
+
+      <form action="/checkout" method="POST">
+        <button type="submit" class="ps-btn-primary">Confirmar compra ✔</button>
+      </form>
+
+      <a href="/carrito" class="ps-btn-secondary">⬅ Volver al carrito</a>
+    </div>
+
+  </main>
+
+</body>
+</html>

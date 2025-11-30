@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Historial de compras | PlayZone Store</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="ps-bg">
+
+  <!-- NAVBAR TEMA PLAYSTATION -->
+  <header class="ps-header">
+    <div class="ps-logo">
+      <img src="/img/ps_logo.png" alt="PlayStation" class="ps-logo-img">
+      <span class="ps-title">PlayZone Store</span>
+    </div>
+
+    <nav class="ps-nav">
+      <a href="/productos" class="ps-nav-link">Productos</a>
+      <a href="/carrito" class="ps-nav-link">Carrito</a>
+      <a href="/historial" class="ps-nav-link active">Historial</a>
+    </nav>
+  </header>
+
+  <main class="ps-main">
+    <h1 class="ps-section-title">Historial de Compras</h1>
+
+    <% if (ordenExitosa) { %>
+      <div class="ps-success">
+        <i class="fa-solid fa-check"></i>
+        ¡Tu compra se realizó correctamente!
+      </div>
+    <% } %>
+
+    <% if (!ordenes.length) { %>
+      <p class="ps-empty">Aún no tienes compras registradas.</p>
+    <% } else { %>
+
+      <% ordenes.forEach(orden => { 
+          const totalNumero = Number(orden.total || 0);
+          let fechaMostrada = orden.fecha_orden;
+          if (fechaMostrada instanceof Date) {
+            fechaMostrada = fechaMostrada.toISOString().slice(0, 19).replace('T', ' ');
+          }
+      %>
+
+        <!-- TARJETA DE ORDEN -->
+        <section class="ps-order-card">
+          <div class="ps-order-header">
+            <h2>Orden #<%= orden.id %></h2>
+            <span class="ps-order-date"><%= fechaMostrada %></span>
+          </div>
+
+          <p class="ps-order-total">
+            <strong>Total:</strong> $<%= totalNumero.toFixed(2) %>
+          </p>
+
+          <h3 class="ps-subtitle">Productos</h3>
+
+          <table class="ps-table">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Precio unitario</th>
+                <th>Cantidad</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <% (detallesPorOrden[orden.id] || []).forEach(det => { 
+                  const precioUnit = Number(det.precio_unitario || 0);
+                  const subtotal = Number(det.subtotal || 0);
+              %>
+                <tr>
+                  <td><%= det.producto_nombre %></td>
+                  <td>$<%= precioUnit.toFixed(2) %></td>
+                  <td><%= det.cantidad %></td>
+                  <td>$<%= subtotal.toFixed(2) %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+
+          <a href="/ticket/<%= orden.id %>" target="_blank" class="ps-btn-secondary">
+            Ver ticket PDF
+          </a>
+        </section>
+
+      <% }) %>
+    <% } %>
+  </main>
+
+</body>
+</html>
