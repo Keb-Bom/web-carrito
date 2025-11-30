@@ -313,6 +313,8 @@ app.get('/ticket/:ordenId', requireLogin, (req, res) => {
 // -------------------------
 // SERVIDOR
 // -------------------------
-app.listen(3000, () =>
-  console.log('Servidor PlayStation Store en http://localhost:3000')
-);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor PlayStation Store ejecutándose en el puerto ${PORT}`);
+});
+
